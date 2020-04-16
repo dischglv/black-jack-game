@@ -1,6 +1,11 @@
 module Bank
   attr_accessor :score
 
+  def give_to(destination, amount)
+    take(amount)
+    destination.put(amount)
+  end
+
   def take(amount)
     if score > amount
       self.score -= amount

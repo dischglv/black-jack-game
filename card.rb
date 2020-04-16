@@ -1,10 +1,18 @@
 class Card
   attr_reader :suit, :rank
 
-  def self.random
-    suit = all_suits.keys.sample
-    rank = all_ranks.sample
-    new(suit, rank)
+  class << self
+    def random
+      suit = all_suits.keys.sample
+      rank = all_ranks.sample
+      new(suit, rank)
+    end
+
+    def random_deck(deck_size)
+      deck = []
+      deck_size.times { deck << random }
+      deck
+    end
   end
 
   def initialize(suit, rank)
@@ -17,16 +25,19 @@ class Card
   end
 
   private
-  def self.all_suits
-    { 
-      Spades: "\u2660",
-      Hearts: "\u2665",
-      Diamonds: "\u2666",
-      Clubs: "\u2663"
-    }
-  end
 
-  def self.all_ranks
-    ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2']
+  class << self
+    def all_suits
+      { 
+        Spades: "\u2660",
+        Hearts: "\u2665",
+        Diamonds: "\u2666",
+        Clubs: "\u2663"
+      }
+    end
+
+    def all_ranks
+      ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2']
+    end
   end
 end

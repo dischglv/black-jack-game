@@ -2,6 +2,9 @@ class Card
   attr_reader :suit, :rank
 
   def self.random
+    suit = all_suits.keys.sample
+    rank = all_ranks.sample
+    new(suit, rank)
   end
 
   def initialize(suit, rank)
@@ -9,11 +12,12 @@ class Card
     @rank = rank
   end
 
-  def string_representation
+  def to_s
+    rank + all_suits[suit]
   end
 
   private
-  def all_suits
+  def self.all_suits
     { 
       Spades: "\u2660",
       Hearts: "\u2665",
@@ -22,7 +26,7 @@ class Card
     }
   end
 
-  def all_ranks
+  def self.all_ranks
     ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2']
   end
 end

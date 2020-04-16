@@ -1,6 +1,9 @@
 class Game
   include Bank
   attr_reader :ui
+  BID_AMOUNT = 10
+  INITIAL_NUMBER_OF_CARDS = 2
+  DEALER_NAME = 'Dealer'
 
   def initialize(ui)
     @ui = ui

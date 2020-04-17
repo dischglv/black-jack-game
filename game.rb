@@ -4,6 +4,7 @@ class Game
   BID_AMOUNT = 10
   INITIAL_DECK_SIZE = 2
   DEALER_NAME = 'Dealer'
+  MAXIMUM_DECK_SIZE = 3
 
   def initialize(ui)
     @ui = ui
@@ -35,7 +36,7 @@ class Game
         ui.puts("Ход игрока #{players.first.name}...")
         players.first.perform_turn
         players.rotate!
-        self.cards_opened = true if maximum_deck_size?
+        self.cards_opened = true if full_decks?
       end
       # подсчет результатов, вывод, перевод денег из банка игры
 
@@ -66,9 +67,9 @@ class Game
     cards_opened
   end
 
-  def maximum_deck_size?
+  def full_decks?
     players.all? do |player|
-      player.deck_size == 3
+      player.deck_size == MAXIMUM_DECK_SIZE
     end
   end
 

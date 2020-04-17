@@ -18,9 +18,10 @@ class Game
     play_round
   end
 
-  private
+  protected
   attr_accessor :players, :cards_opened
 
+  private
   def play_round
     loop do
       self.cards_opened = false
@@ -61,6 +62,7 @@ class Game
   end
 
   def cards_opened?
+    cards_opened
   end
 
   def maximum_deck_size?

@@ -5,9 +5,13 @@ class Player
   attr_reader :name
   attr_accessor :cards
 
-  def initialize(name)
+  def initialize(name, game)
     @score = INITIAL_SCORE
     @name = name
     @cards = []
+    @game = game
   end
+
+  protected
+  attr_accessor :game
 end

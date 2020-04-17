@@ -12,6 +12,10 @@ class Player
     @game = game
   end
 
+  def deck_size
+    cards.length
+  end
+
   protected
   attr_accessor :game
 end

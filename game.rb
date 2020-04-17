@@ -66,6 +66,9 @@ class Game
   end
 
   def maximum_deck_size?
+    players.all? do |player|
+      player.deck_size == 3
+    end
   end
 
   def count_points(player)

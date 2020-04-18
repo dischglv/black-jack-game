@@ -7,7 +7,7 @@ module Bank
   end
 
   def take(amount)
-    if score > amount
+    if score >= amount
       self.score -= amount
     else
       raise ArgumentError, 'Argument is greater than score'

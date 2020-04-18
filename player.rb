@@ -31,4 +31,11 @@ class Player
   def open_cards
     game.cards_open = true
   end
+
+  def turns
+    {
+      skip_turn: 'Пропустить ход',
+      add_card: 'Добавить карту',
+      open_cards: 'Открыть карты'
+    }
 end

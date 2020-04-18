@@ -21,7 +21,7 @@ class Card
   end
 
   def to_s
-    rank + all_suits[suit]
+    rank + self.class.all_suits[suit]
   end
 
   private

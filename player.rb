@@ -29,7 +29,7 @@ class Player
   end
 
   def open_cards
-    game.cards_open = true
+    game.cards_opened = true
   end
 
   def turns
@@ -38,4 +38,5 @@ class Player
       'Добавить карту' => :add_card,
       'Открыть карты' => :open_cards
     }
+  end
 end

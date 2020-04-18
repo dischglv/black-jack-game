@@ -1,16 +1,16 @@
 module ConsoleUI
   class << self
     def puts(msg)
-      puts msg
+      Kernel.puts msg
     end
 
     def print(msg)
-      print(msg)
+      Kernel.print(msg)
     end
 
     def request(msg)
       print(msg)
-      gets.chomp
+      Kernel.gets.chomp
     end
 
     def ask(msg)
@@ -19,13 +19,13 @@ module ConsoleUI
 
     # принимает хэш, у которого ключи - строки
     def hash_choose(item, options)
+      options_names = []
       options.each_with_index do |option, index|
         puts "[#{index + 1}] #{option.first}"
-        options_names ||= []
-        options_names << options.first
+        options_names << option.first
       end
       choice = request("Выберите #{item} и введите его номер: ")
-      choice_name = options_names[choice - 1]
+      choice_name = options_names[choice.to_i - 1]
       result = options[choice_name]
       result
     end

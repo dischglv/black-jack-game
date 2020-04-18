@@ -25,7 +25,7 @@ class Player
   def add_card
     raise 'Cannot add more cards, deck is a maximum size' if deck_size == game.maximum_deck_size
     cards << Card.random
-    game.show_game_status
+    game.ui.puts(game.game_status)
   end
 
   def open_cards

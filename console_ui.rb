@@ -20,10 +20,12 @@ module ConsoleUI
     # принимает хэш, у которого ключи - строки
     def hash_choose(item, options)
       options_names = []
+
       options.each_with_index do |option, index|
         puts "[#{index + 1}] #{option.first}"
         options_names << option.first
       end
+      
       choice = request("Выберите #{item} и введите его номер: ")
       choice_name = options_names[choice.to_i - 1]
       result = options[choice_name]

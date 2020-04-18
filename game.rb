@@ -75,11 +75,14 @@ class Game
   attr_accessor :players, :winners
 
   private
+  
   def play_round
+    deck = Deck.new
     loop do
       self.cards_opened = false
       players.each do |player|
-        player.cards = Card.random_deck(INITIAL_DECK_SIZE)
+        # player.cards = Card.random_deck(INITIAL_DECK_SIZE)
+        player.take_card(deck, INITIAL_DECK_SIZE)
         player.give_to self, BID_AMOUNT
       end
       ui.puts(game_status)
@@ -101,8 +104,16 @@ class Game
 
       ui.puts(game_status)
       ui.puts(final_report)
+      player.each { |player| player.cards = [] }
 
       break unless ui.ask('Хотите сыграть еще раз?')
+    end
+
+  rescue ArgumentError => e
+    if e.message == 'Argument is greater than score'
+      ui.puts('Игра закончена!')
+    elsif
+      raise e
     end
   end
 

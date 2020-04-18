@@ -1,6 +1,6 @@
 class Game
   include Bank
-  attr_accessor :cards_opened, :ui
+  attr_accessor :cards_opened, :ui, :deck
   BID_AMOUNT = 10
   INITIAL_DECK_SIZE = 2
   DEALER_NAME = 'Дилер'
@@ -11,6 +11,7 @@ class Game
     @players = []
     @winners = []
     @score = 0
+    @deck = Deck.new
   end
 
   def start
@@ -75,14 +76,12 @@ class Game
   attr_accessor :players, :winners
 
   private
-  
+
   def play_round
-    deck = Deck.new
     loop do
       self.cards_opened = false
       players.each do |player|
-        # player.cards = Card.random_deck(INITIAL_DECK_SIZE)
-        player.take_card(deck, INITIAL_DECK_SIZE)
+        player.take_card(INITIAL_DECK_SIZE)
         player.give_to self, BID_AMOUNT
       end
       ui.puts(game_status)
@@ -104,7 +103,7 @@ class Game
 
       ui.puts(game_status)
       ui.puts(final_report)
-      player.each { |player| player.cards = [] }
+      player.each { |player| player.discard_cards }
 
       break unless ui.ask('Хотите сыграть еще раз?')
     end

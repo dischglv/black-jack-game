@@ -16,8 +16,12 @@ class Player
     cards.length
   end
 
-  def take_card(deck, number = 1)
-    cards << deck.give_cards(number)
+  def take_card(number = 1)
+    cards << game.deck.give_cards(number)
+  end
+
+  def discard_cards
+    game.deck.take_cards(cards)
   end
 
   protected

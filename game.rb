@@ -1,26 +1,52 @@
 class Game
   include Bank
-  attr_reader :ui
+  attr_accessor :cards_opened, :ui
   BID_AMOUNT = 10
   INITIAL_DECK_SIZE = 2
-  DEALER_NAME = 'Dealer'
+  DEALER_NAME = 'Дилер'
   MAXIMUM_DECK_SIZE = 3
 
   def initialize(ui)
     @ui = ui
     @players = []
+    @winners = []
+    @score = 0
   end
 
   def start
-    name = ui.request('Введите имя пользователя')
+    name = ui.request('Введите имя пользователя: ')
     user = UserPlayer.new(name, self)
     dealer = ComputerPlayer.new(DEALER_NAME, self)
     players << user << dealer
     play_round
   end
 
+  def maximum_deck_size
+    MAXIMUM_DECK_SIZE
+  end
+
+  def game_status
+    status = "----------------------------------\n"
+    status += "Банк игры: #{score}$\n"
+
+    players.each { |player| status += "Банк #{player.name}: #{player.score}$\n" }
+
+    players.each do |player|
+      if player.is_a?(UserPlayer) || (player.is_a?(ComputerPlayer) && cards_opened?)
+        status += "#{player.name}:  "
+        player.cards.each { |card| status += "#{card} " }
+        status += "  всего очков: #{count_points(player)}\n"
+      elsif player.is_a?(ComputerPlayer) && !cards_opened?
+        status += "#{player.name}:  "
+        player.cards.each { |card| status += "\uf0a0 " }
+        status += "\n"
+      end
+    end
+    status += "----------------------------------\n"
+  end
+
   protected
-  attr_accessor :players, :cards_opened
+  attr_accessor :players, :winners
 
   private
   def play_round
@@ -30,7 +56,7 @@ class Game
         player.cards = Card.random_deck(INITIAL_DECK_SIZE)
         player.give_to self, BID_AMOUNT
       end
-      show_game_status
+      ui.puts(game_status)
 
       until cards_opened?
         ui.puts("Ход игрока #{players.first.name}...")
@@ -38,32 +64,20 @@ class Game
         players.rotate!
         self.cards_opened = true if full_decks?
       end
-      # подсчет результатов, вывод, перевод денег из банка игры
+
+      define_winners
+
+      if winners.length > 1
+        winners.each { |winner| self.give_to winner, 10}
+      elsif winners.length == 1
+        self.give_to winners.first, score
+      end
+
+      ui.puts(game_status)
+      ui.puts(final_report)
 
       break unless ui.ask('Хотите сыграть еще раз?')
     end
-  end
-
-  # refacorme
-  def show_game_status
-    ui.puts("----------------------------------")
-    ui.puts("Банк игры: #{score}$")
-
-    players.each { |player| ui.puts("Банк #{player.name}: #{player.score}$") }
-
-    players.each do |player|
-      if player.is_a? UserPlayer or player.is_a? ComputerPlayer && cards_opened?
-        ui.print("#{player.name}:  ")
-        player.cards.each { |card| ui.print("#{card} ") }
-        ui.puts(",  всего очков: #{count_points(player)}")
-      elsif player.is_a? ComputerPlayer && !cards_opened?
-        ui.print("#{player.name}:  ")
-        player.cards.each { |card| ui.print("\u1f0a0 ") }
-        ui.puts("")
-      end
-    end
-    
-    ui.puts("----------------------------------")
   end
 
   def cards_opened?
@@ -100,5 +114,37 @@ class Game
       cards.each &points_counter
     end
     points
+  end
+
+  def define_winners
+    max_points = 0
+    players.each do |player|
+      player_points = count_points(player)
+      if player_points > max_points && player_points <= 21
+        max_points = player_points
+        self.winners = [player]
+      elsif player_points == max_points
+        self.winners << player
+      end
+    end
+  end
+
+  def final_report
+    report = ""
+
+    if winners.length > 1
+      report += "Игроки "
+      winners.each { |winner| report += "#{winner.name} "}
+      report += "сыграли ничью \n"
+    elsif winners.length == 1
+      report += "Игрок #{winners.first.name} выиграл\n"
+    end
+
+    losers = players - winners
+    if losers.length > 0
+      losers.each { |loser| report += "Игрок #{loser.name} проиграл\n" }
+    end
+
+    report
   end
 end

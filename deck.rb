@@ -13,15 +13,13 @@ class Deck
     end
   end
 
-  def initialiaze
+  def initialize
     @cards = self.class.full_deck
-    puts self.class.full_deck
   end
 
   def give_cards(number = 1)
     result = []
     number.times do
-      puts self.cards
       cards.shuffle!
       result << cards.pop
     end
@@ -29,7 +27,7 @@ class Deck
   end
 
   def take_cards(*args)
-    cards.concat(args)
+    cards.concat(*args)
   end
 
   protected

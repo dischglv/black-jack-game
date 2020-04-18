@@ -16,6 +16,10 @@ class Player
     cards.length
   end
 
+  def take_card(deck, number = 1)
+    cards << deck.give_cards(number)
+  end
+
   protected
   attr_accessor :game
 
@@ -24,7 +28,7 @@ class Player
 
   def add_card
     raise 'Cannot add more cards, deck is a maximum size' if deck_size == game.maximum_deck_size
-    cards << Card.random
+    take_card
     game.ui.puts(game.game_status)
   end
 

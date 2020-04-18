@@ -1,25 +1,37 @@
 class Deck
-  def initialiaze
-    @cards = full_deck
+  attr_reader :cards
+
+  class << self
+    def full_deck
+      result = []
+      Card.all_suits.each_key do |suit|
+        Card.all_ranks.each do |rank|
+          result << Card.new(suit, rank)
+        end
+      end
+      result
+    end
   end
 
-  def full_deck
-    Card.all_suits.each_key do |suit|
-      Card.all_ranks.each do |rank|
-        cards << Card.new(suit, rank)
-      end
-    end
+  def initialiaze
+    @cards = self.class.full_deck
+    puts self.class.full_deck
   end
 
   def give_cards(number = 1)
     result = []
     number.times do
+      puts self.cards
       cards.shuffle!
       result << cards.pop
     end
     result
   end
 
+  def take_cards(*args)
+    cards.concat(args)
+  end
+
   protected
-  attr_accessor :cards
+  attr_writer :cards
 end

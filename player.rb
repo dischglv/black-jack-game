@@ -34,8 +34,8 @@ class Player
 
   def turns
     {
-      skip_turn: 'Пропустить ход',
-      add_card: 'Добавить карту',
-      open_cards: 'Открыть карты'
+      'Пропустить ход' => :skip_turn,
+      'Добавить карту' => :add_card,
+      'Открыть карты' => :open_cards
     }
 end

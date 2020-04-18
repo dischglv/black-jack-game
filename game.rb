@@ -48,7 +48,9 @@ class Game
   def show_game_status
     ui.puts("----------------------------------")
     ui.puts("Банк игры: #{score}$")
+
     players.each { |player| ui.puts("Банк #{player.name}: #{player.score}$") }
+
     players.each do |player|
       if player.is_a? UserPlayer or player.is_a? ComputerPlayer && cards_opened?
         ui.print("#{player.name}:  ")
@@ -60,6 +62,7 @@ class Game
         ui.puts("")
       end
     end
+    
     ui.puts("----------------------------------")
   end
 

@@ -45,6 +45,32 @@ class Game
     status += "----------------------------------\n"
   end
 
+  def count_points(player)
+    points = 0
+    cards = player.cards
+    points_counter = Proc.new do |card|
+      case card.rank
+      when 'K', 'Q', 'J'
+        points += 10
+      when 'A'
+        points += 1
+      else
+        points += card.rank.to_i
+      end
+    end
+
+    if cards.any? { |card| card.rank == 'A'}
+      cards.sort! do |first, second|
+        first.rank == 'A' ? 1 : 0
+      end
+      cards[0...-1].each &points_counter
+      points += points + 11 > 21 ? 1 : 11
+    else
+      cards.each &points_counter
+    end
+    points
+  end
+
   protected
   attr_accessor :players, :winners
 
@@ -88,32 +114,6 @@ class Game
     players.all? do |player|
       player.deck_size == MAXIMUM_DECK_SIZE
     end
-  end
-
-  def count_points(player)
-    points = 0
-    cards = player.cards
-    points_counter = Proc.new do |card|
-      case card.rank
-      when 'K', 'Q', 'J'
-        points += 10
-      when 'A'
-        points += 1
-      else
-        points += card.rank.to_i
-      end
-    end
-
-    if cards.any? { |card| card.rank == 'A'}
-      cards.sort! do |first, second|
-        first.rank == 'A' ? 1 : 0
-      end
-      cards[0...-1].each &points_counter
-      points += points + 11 > 21 ? 1 : 11
-    else
-      cards.each &points_counter
-    end
-    points
   end
 
   def define_winners

@@ -79,11 +79,7 @@ class Game
 
   def play_round
     loop do
-      self.cards_opened = false
-      players.each do |player|
-        player.take_card(INITIAL_DECK_SIZE)
-        player.give_to self, BID_AMOUNT
-      end
+      prepare_game
       ui.puts(game_status)
 
       until cards_opened?
@@ -103,7 +99,7 @@ class Game
 
       ui.puts(game_status)
       ui.puts(final_report)
-      player.each { |player| player.discard_cards }
+      players.each { |player| player.discard_cards }
 
       break unless ui.ask('Хотите сыграть еще раз?')
     end
@@ -113,6 +109,18 @@ class Game
       ui.puts('Игра закончена!')
     elsif
       raise e
+    end
+  end
+
+  def prepare_game
+    until players.first.is_a?(UserPlayer)
+      players.rotate!
+    end
+
+    self.cards_opened = false
+    players.each do |player|
+      player.take_card(INITIAL_DECK_SIZE)
+      player.give_to self, BID_AMOUNT
     end
   end
 

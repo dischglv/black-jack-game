@@ -1,6 +1,5 @@
 class Game
-  include Bank
-  attr_accessor :cards_opened, :ui, :deck
+  attr_accessor :cards_opened, :ui, :deck, :bank
   BID_AMOUNT = 10
   INITIAL_DECK_SIZE = 2
   DEALER_NAME = 'Дилер'
@@ -12,6 +11,7 @@ class Game
     @winners = []
     @score = 0
     @deck = Deck.new
+    @bank = Bank.new(Bank.INITIAL_BANK_ACCOUNT)
   end
 
   def start
@@ -72,9 +72,9 @@ class Game
       define_winners
 
       if winners.length > 1
-        winners.each { |winner| self.give_to winner, 10}
+        winners.each { |winner| give_money_to(winner, BID_AMOUNT)}
       elsif winners.length == 1
-        self.give_to winners.first, score
+        give_money_to(winners.first, bank.money)
       end
 
       ui.show_game_status(players, money)
@@ -100,8 +100,12 @@ class Game
     self.cards_opened = false
     players.each do |player|
       player.take_card(INITIAL_DECK_SIZE)
-      player.give_to self, BID_AMOUNT
+      player.give_money_to(self, BID_AMOUNT)
     end
+  end
+
+  def give_money_to(destination, amount)
+    bank.give_to(destination, amount)
   end
 
   def cards_opened?

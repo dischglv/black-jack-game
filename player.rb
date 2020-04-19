@@ -1,15 +1,13 @@
 class Player
-  include Bank
-  INITIAL_SCORE = 100
-
   attr_reader :name
-  attr_accessor :cards
+  attr_accessor :cards, :bank
 
   def initialize(name, game)
     @score = INITIAL_SCORE
     @name = name
     @cards = []
     @game = game
+    @bank = Bank.new(Bank.INITIAL_PLAYER_ACCOUNT)
   end
 
   def deck_size
@@ -25,6 +23,10 @@ class Player
     self.cards = []
   end
 
+  def give_money_to(destination, amount)
+    bank.give_to(destination, amount)
+  end
+  
   protected
   attr_accessor :game
 

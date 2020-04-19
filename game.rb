@@ -6,8 +6,8 @@ class Game
   DEALER_NAME = 'Дилер'
   MAXIMUM_DECK_SIZE = 3
 
-  def initialize(ui)
-    @ui = ui
+  def initialize
+    @ui = ConsoleUI.new
     @players = []
     @winners = []
     @score = 0
@@ -15,7 +15,7 @@ class Game
   end
 
   def start
-    name = ui.request('Введите имя пользователя: ')
+    name = ui.request_user_name
     user = UserPlayer.new(name, self)
     dealer = ComputerPlayer.new(DEALER_NAME, self)
     players << user << dealer
@@ -24,26 +24,6 @@ class Game
 
   def maximum_deck_size
     MAXIMUM_DECK_SIZE
-  end
-
-  def game_status
-    status = "----------------------------------\n"
-    status += "Банк игры: #{score}$\n"
-
-    players.each { |player| status += "Банк #{player.name}: #{player.score}$\n" }
-
-    players.each do |player|
-      if player.is_a?(UserPlayer) || (player.is_a?(ComputerPlayer) && cards_opened?)
-        status += "#{player.name}:  "
-        player.cards.each { |card| status += "#{card} " }
-        status += "  всего очков: #{count_points(player)}\n"
-      elsif player.is_a?(ComputerPlayer) && !cards_opened?
-        status += "#{player.name}:  "
-        player.cards.each { |card| status += "\uf0a0 " }
-        status += "\n"
-      end
-    end
-    status += "----------------------------------\n"
   end
 
   def count_points(player)
@@ -80,10 +60,10 @@ class Game
   def play_round
     loop do
       prepare_game
-      ui.puts(game_status)
+      ui.show_game_status(players, money)
 
       until cards_opened?
-        ui.puts("Ход игрока #{players.first.name}...")
+        ui.inform_player_move(players.first)
         players.first.perform_turn
         players.rotate!
         self.cards_opened = true if full_decks?
@@ -97,16 +77,16 @@ class Game
         self.give_to winners.first, score
       end
 
-      ui.puts(game_status)
-      ui.puts(final_report)
+      ui.show_game_status(players, money)
+      ui.puts_final_report(winners, players - winners)
       players.each { |player| player.discard_cards }
 
-      break unless ui.ask('Хотите сыграть еще раз?')
+      break unless ui.ask_play_more
     end
 
   rescue ArgumentError => e
     if e.message == 'Argument is greater than score'
-      ui.puts('Игра закончена!')
+      ui.inform_game_over
     elsif
       raise e
     end
@@ -145,24 +125,5 @@ class Game
         self.winners << player
       end
     end
-  end
-
-  def final_report
-    report = ""
-
-    if winners.length > 1
-      report += "Игроки "
-      winners.each { |winner| report += "#{winner.name} "}
-      report += "сыграли ничью \n"
-    elsif winners.length == 1
-      report += "Игрок #{winners.first.name} выиграл\n"
-    end
-
-    losers = players - winners
-    if losers.length > 0
-      losers.each { |loser| report += "Игрок #{loser.name} проиграл\n" }
-    end
-
-    report
   end
 end

@@ -14,20 +14,20 @@ class ConsoleUI
     result
   end
 
-  def show_game_status(players, game_bank)
+  def show_game_status(players, game)
     status = "----------------------------------\n"
-    status += "Банк игры: #{game_bank}$\n"
+    status += "Банк игры: #{game.bank.money}$\n"
 
-    players.each { |player| status += "Банк #{player.name}: #{player.score}$\n" }
+    players.each { |player| status += "Банк #{player.name}: #{player.bank.money}$\n" }
 
     players.each do |player|
-      if player.is_a?(UserPlayer) || (player.is_a?(ComputerPlayer) && cards_opened?)
+      if player.is_a?(UserPlayer) || (player.is_a?(ComputerPlayer) && game.cards_opened?)
         status += "#{player.name}:  "
-        player.cards.each { |card| status += "#{card} " }
-        status += "  всего очков: #{count_points(player)}\n"
-      elsif player.is_a?(ComputerPlayer) && !cards_opened?
+        player.hand.cards.each { |card| status += "#{card} " }
+        status += "  всего очков: #{player.hand.points}\n"
+      elsif player.is_a?(ComputerPlayer) && !game.cards_opened?
         status += "#{player.name}:  "
-        player.cards.each { |card| status += "\uf0a0 " }
+        player.hand.cards.each { |card| status += "\uf0a0 " }
         status += "\n"
       end
     end

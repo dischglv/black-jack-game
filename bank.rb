@@ -1,9 +1,7 @@
 class Bank
   attr_accessor :money
-  INITIAL_PLAYER_ACCOUNT = 100
-  INITIAL_GAME_ACCOUNT = 0
 
-  def initialize(money)
+  def initialize(money = 0)
     @money = money
   end
 
@@ -13,14 +11,14 @@ class Bank
   end
 
   def take(amount)
-    if score >= amount
-      self.score -= amount
+    if money >= amount
+      self.money -= amount
     else
       raise ArgumentError, 'Argument is greater than score'
     end
   end
 
   def put(amount)
-    self.score += amount
+    self.money += amount
   end
 end

@@ -1,32 +1,18 @@
 class Player
   attr_reader :name
-  attr_accessor :cards, :bank
+  attr_accessor :bank, :hand
 
   def initialize(name, game)
-    @score = INITIAL_SCORE
     @name = name
-    @cards = []
     @game = game
-    @bank = Bank.new(Bank.INITIAL_PLAYER_ACCOUNT)
-  end
-
-  def deck_size
-    cards.length
-  end
-
-  def take_card(number = 1)
-    cards.concat(game.deck.give_cards(number))
-  end
-
-  def discard_cards
-    game.deck.take_cards(cards)
-    self.cards = []
+    @bank = Bank.new(100)
+    @hand = Hand.new
   end
 
   def give_money_to(destination, amount)
     bank.give_to(destination, amount)
   end
-  
+
   protected
   attr_accessor :game
 
@@ -34,9 +20,9 @@ class Player
   end
 
   def add_card
-    raise 'Cannot add more cards, deck is a maximum size' if deck_size == game.maximum_deck_size
-    take_card
-    game.ui.puts(game.game_status)
+    raise 'Cannot add more cards, deck is a maximum size' if hand.deck_size == game.maximum_deck_size
+    hand.take_card
+    game.ui.puts_game_status
   end
 
   def open_cards

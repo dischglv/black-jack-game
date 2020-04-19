@@ -9,9 +9,8 @@ class Game
     @ui = ConsoleUI.new
     @players = []
     @winners = []
-    @score = 0
     @deck = Deck.new
-    @bank = Bank.new(Bank.INITIAL_BANK_ACCOUNT)
+    @bank = Bank.new
   end
 
   def start
@@ -26,32 +25,10 @@ class Game
     MAXIMUM_DECK_SIZE
   end
 
-  def count_points(player)
-    points = 0
-    cards = player.cards
-    points_counter = Proc.new do |card|
-      case card.rank
-      when 'K', 'Q', 'J'
-        points += 10
-      when 'A'
-        points += 1
-      else
-        points += card.rank.to_i
-      end
-    end
-
-    if cards.any? { |card| card.rank == 'A'}
-      cards.sort! do |first, second|
-        first.rank == 'A' ? 1 : 0
-      end
-      cards[0...-1].each &points_counter
-      points += points + 11 > 21 ? 1 : 11
-    else
-      cards.each &points_counter
-    end
-    points
+  def cards_opened?
+    cards_opened
   end
-
+  
   protected
   attr_accessor :players, :winners
 
@@ -60,7 +37,7 @@ class Game
   def play_round
     loop do
       prepare_game
-      ui.show_game_status(players, money)
+      ui.show_game_status(players, self)
 
       until cards_opened?
         ui.inform_player_move(players.first)
@@ -77,9 +54,9 @@ class Game
         give_money_to(winners.first, bank.money)
       end
 
-      ui.show_game_status(players, money)
+      ui.show_game_status(players, self)
       ui.puts_final_report(winners, players - winners)
-      players.each { |player| player.discard_cards }
+      players.each { |player| player.hand.discard_cards(deck) }
 
       break unless ui.ask_play_more
     end
@@ -99,7 +76,7 @@ class Game
 
     self.cards_opened = false
     players.each do |player|
-      player.take_card(INITIAL_DECK_SIZE)
+      player.hand.take_cards(deck, INITIAL_DECK_SIZE)
       player.give_money_to(self, BID_AMOUNT)
     end
   end
@@ -108,20 +85,16 @@ class Game
     bank.give_to(destination, amount)
   end
 
-  def cards_opened?
-    cards_opened
-  end
-
   def full_decks?
     players.all? do |player|
-      player.deck_size == MAXIMUM_DECK_SIZE
+      player.hand.deck_size == MAXIMUM_DECK_SIZE
     end
   end
 
   def define_winners
     max_points = 0
     players.each do |player|
-      player_points = count_points(player)
+      player_points = player.hand.points
       if player_points > max_points && player_points <= 21
         max_points = player_points
         self.winners = [player]

@@ -28,10 +28,10 @@ class Card
 
   private
   def validate!
-    unless all_suits.keys.include? suit
+    unless self.class.all_suits.keys.include? suit
       raise ArgumentError, "#{suit} must be one of the all_suits suit"
     end
-    unless all_ranks.include? rank
+    unless self.class.all_ranks.include? rank
       raise ArgumentError, "#{rank} must be one of the all_ranks rank"
     end
   end

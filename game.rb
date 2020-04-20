@@ -21,10 +21,6 @@ class Game
     play_round
   end
 
-  def maximum_deck_size
-    MAXIMUM_DECK_SIZE
-  end
-
   def cards_opened?
     cards_opened
   end

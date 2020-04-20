@@ -81,7 +81,7 @@ class Game
     if current_player.is_a?(UserPlayer)
       turn = ui.choose_user_move(full_deck?(current_player))
     elsif current_player.is_a?(ComputerPlayer)
-      turn = choose_dealer_move(current_player)
+      turn = current_player.choose_move
     end
 
     case turn
@@ -109,14 +109,6 @@ class Game
 
   def full_deck?(player)
     player.hand.deck_size == MAXIMUM_DECK_SIZE
-  end
-
-  def choose_dealer_move(player)
-    if player.hand.points < 17 && player.hand.deck_size < MAXIMUM_DECK_SIZE
-      :add_card
-    else
-      :skip_turn
-    end
   end
 
   def define_winners

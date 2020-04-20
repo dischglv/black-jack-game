@@ -8,7 +8,6 @@ class Game
   def initialize
     @ui = ConsoleUI.new
     @players = []
-    @winners = []
     @deck = Deck.new
     @bank = Bank.new
   end
@@ -26,7 +25,7 @@ class Game
   end
   
   protected
-  attr_accessor :players, :winners
+  attr_accessor :players, :winners, :user_went_over
 
   private
 
@@ -94,7 +93,13 @@ class Game
       self.cards_opened = true
     end
 
-    self.cards_opened = true if full_decks?
+    if current_player.is_a?(UserPlayer) && current_player.hand.points > 21
+      self.user_went_over = true
+    else
+      self.user_went_over = false
+    end
+
+    self.cards_opened = true if full_decks? || user_went_over?
   end
 
   def give_money_to(destination, amount)
@@ -111,7 +116,20 @@ class Game
     player.hand.deck_size == MAXIMUM_DECK_SIZE
   end
 
+  def user_went_over?
+    user_went_over
+  end
+
   def define_winners
+    self.winners = []
+
+    if user_went_over?
+      players.each do |player|
+        winners << player if player.is_a?(ComputerPlayer)
+      end
+      return
+    end
+    
     max_points = 0
     players.each do |player|
       player_points = player.hand.points

@@ -15,8 +15,8 @@ class Game
 
   def start
     name = ui.request_user_name
-    user = UserPlayer.new(name, self)
-    dealer = ComputerPlayer.new(DEALER_NAME, self)
+    user = UserPlayer.new(name)
+    dealer = ComputerPlayer.new(DEALER_NAME)
     players << user << dealer
     play_round
   end
@@ -41,9 +41,8 @@ class Game
 
       until cards_opened?
         ui.inform_player_move(players.first)
-        players.first.perform_turn
+        perform_turn
         players.rotate!
-        self.cards_opened = true if full_decks?
       end
 
       define_winners
@@ -81,13 +80,46 @@ class Game
     end
   end
 
+  def perform_turn
+    current_player = players.first
+    if current_player.is_a?(UserPlayer)
+      turn = ui.choose_user_move(full_deck?(current_player))
+    elsif current_player.is_a?(ComputerPlayer)
+      turn = choose_dealer_move(current_player)
+    end
+
+    case turn
+    when :skip_turn
+      return
+    when :add_card
+      current_player.hand.take_cards(deck)
+      ui.show_game_status(players, self)
+    when :open_cards
+      self.cards_opened = true
+    end
+
+    self.cards_opened = true if full_decks?
+  end
+
   def give_money_to(destination, amount)
     bank.give_to(destination, amount)
   end
 
   def full_decks?
     players.all? do |player|
-      player.hand.deck_size == MAXIMUM_DECK_SIZE
+      full_deck?(player)
+    end
+  end
+
+  def full_deck?(player)
+    player.hand.deck_size == MAXIMUM_DECK_SIZE
+  end
+
+  def choose_dealer_move(player)
+    if player.hand.points < 17 && player.hand.deck_size < MAXIMUM_DECK_SIZE
+      :add_card
+    else
+      :skip_turn
     end
   end
 

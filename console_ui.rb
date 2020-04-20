@@ -1,19 +1,4 @@
 class ConsoleUI
-  # принимает хэш, у которого ключи - строки
-  def hash_choose(item, options)
-    options_names = []
-
-    options.each_with_index do |option, index|
-      puts "[#{index + 1}] #{option.first}"
-      options_names << option.first
-    end
-    
-    choice = request("Выберите #{item} и введите его номер: ")
-    choice_name = options_names[choice.to_i - 1]
-    result = options[choice_name]
-    result
-  end
-
   def show_game_status(players, game)
     status = "----------------------------------\n"
     status += "Банк игры: #{game.bank.money}$\n"
@@ -70,8 +55,14 @@ class ConsoleUI
     puts('Игра закончена!')
   end
 
-  private
+  def choose_user_move(full_deck)
+    turns = { 'Пропустить ход' => :skip_turn, 'Открыть карты' => :open_cards }
+    turns['Добавить карту'] = :add_card unless full_deck
 
+    response = hash_choose('ход', turns)
+  end
+
+  private
   def puts(msg)
     Kernel.puts msg
   end
@@ -87,5 +78,20 @@ class ConsoleUI
 
   def ask(msg)
     request("#{msg} [дн] ") == 'д'
+  end
+
+  # принимает хэш, у которого ключи - строки
+  def hash_choose(item, options)
+    options_names = []
+
+    options.each_with_index do |option, index|
+      puts "[#{index + 1}] #{option.first}"
+      options_names << option.first
+    end
+    
+    choice = request("Выберите #{item} и введите его номер: ")
+    choice_name = options_names[choice.to_i - 1]
+    result = options[choice_name]
+    result
   end
 end

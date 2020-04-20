@@ -1,12 +1,9 @@
 class Hand
-  # поместить в private?
-  attr_accessor :cards
-
   def initialize
     @cards = []
   end
 
-  def take_cards(deck, number)
+  def take_cards(deck, number = 1)
     cards.concat(deck.give_cards(number))
   end
 
@@ -43,4 +40,13 @@ class Hand
     end
     points
   end
+
+  def each_card(&block)
+    if block_given?
+      cards.each { |card| yield(card) }
+    end
+  end
+
+  protected
+  attr_accessor :cards
 end

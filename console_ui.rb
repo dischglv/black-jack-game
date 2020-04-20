@@ -8,11 +8,11 @@ class ConsoleUI
     players.each do |player|
       if player.is_a?(UserPlayer) || (player.is_a?(ComputerPlayer) && game.cards_opened?)
         status += "#{player.name}:  "
-        player.hand.cards.each { |card| status += "#{card} " }
+        player.hand.each_card { |card| status += "#{card} " }
         status += "  всего очков: #{player.hand.points}\n"
       elsif player.is_a?(ComputerPlayer) && !game.cards_opened?
         status += "#{player.name}:  "
-        player.hand.cards.each { |card| status += "\uf0a0 " }
+        player.hand.each_card { |card| status += "\uf0a0 " }
         status += "\n"
       end
     end
